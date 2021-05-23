@@ -1,0 +1,51 @@
+CREATE TABLE Customers_Table (
+    CustomerID CHAR(8) PRIMARY KEY, 
+    Last_Name VARCHAR(30), 
+    First_Name VARCHAR(30),
+    Email VARCHAR(30) NOT NULL UNIQUE,
+    Phone_Number VARCHAR(22),
+    Address VARCHAR(60)
+);
+
+
+CREATE TABLE Items_Table(
+  ItemID CHAR(8) PRIMARY KEY,
+  ItemName VARCHAR (12),
+  ItemPrice DECIMAL, 
+  RestaurantID CHAR(6),
+CategoryID CHAR(8));
+
+ALTER TABLE Orders 
+ADD COLUMN ItemID CHAR(8);
+
+ALTER TABLE Orders 
+ CONSTRAINT fk_ItemID FOREIGN KEY (ItemID) REFERENCES Items(ItemID);
+
+INSERT INTO Customers_Table VALUES (00000001, 'Loginov', 'Ivan', 'ivanlog@gmail.com', 07309845497, 'flat 7 23 Surrey Road');
+INSERT INTO Customers_Table VALUES (00000002, 'Starchekova', 'Anastasia', 'a.starchekova@gmail.com', 07709845698, '35 Melville avenue flat 6');
+INSERT INTO Customers_Table VALUES (00000003, 'Arsenev', 'Ilhom', 'arsilh@gmail.com', 89145188518, 'Novokosino street house 2');
+INSERT INTO Customers_Table VALUES (00000004, 'Tokolova', 'Uliana', 'u.tokolova@gmail.com', 07609845696, 'flat 88 23 Tower Bridge');
+INSERT INTO Customers_Table VALUES (00000005, 'Tokolov', 'Kirill', 'kitilltok@gmail.com', 8924309845497, 'flat 88 23 Tower Bridge');
+INSERT INTO Customers_Table VALUES (00000006, 'Starchekova', 'Anastasia', 'anastassia527@yandex.ru', 07709845698, '35 Melville avenue flat 6');
+INSERT INTO Customers_Table VALUES (00000007,'Gordeev','Alex','gordeev12@gmail.com',07384843496,'Croydon CR4 6SH');
+INSERT INTO Customers_Table VALUES (00000008,'Gordeeva','Victoria','gordeevavika@gmail.com',07544847896,'Croydon CR4 6SH');
+INSERT INTO Customers_Table VALUES (00000009,'Williams','Rob','robwilliams@gmail.com',07544767855,'D06 FW93 Ireland Dublin');
+INSERT INTO Customers_Table VALUES (00000010,'Hughes','Lorcan','lorcanhughes@gmail.com',07744835896,'Armagh 25 Magheraville road');
+
+
+SELECT o.OrderID, SUM(i.ItemPrice) as MAXPRICE from
+OrderLines_Table o JOIN Items_Table i
+JOIN Restaurants_Table r 
+WHERE o.ItemID=i.ItemID
+AND i.RestaurantID= r.RestaurantID
+GROUP BY o.OrderID
+HAVING SUM(i.ItemPrice)>=ALL(
+(SELECT SUM(i.ItemPrice)
+FROM OrderLines_Table o JOIN Items_Table i
+JOIN Restaurants_Table r 
+WHERE o.ItemID=i.ItemID
+AND i.RestaurantID= r.RestaurantID
+GROUP BY o.OrderID);
+
+
+
